@@ -1,0 +1,79 @@
+# Import packages
+import pandas as pd
+import datetime as dt
+import matplotlib.pyplot as plt
+
+# Read in 2022 and 2023 data. Update path to 2022 and 2023 files.
+CO_data_2022 = pd.read_csv('ad_viz_plotval_data-2022.csv')
+CO_data_2023 = pd.read_csv('ad_viz_plotval_data-2023.csv')
+
+# Convert 'Date' column to date data type
+CO_data_2022['Date'] = pd.to_datetime(CO_data_2022['Date'])
+CO_data_2023['Date'] = pd.to_datetime(CO_data_2023['Date'])
+
+# Create new data frames with just Date, CO concentration, local site name
+Condensed_CO_data_2022 = CO_data_2022[['Date','Daily Max 8-hour CO Concentration','Local Site Name']]
+Condensed_CO_data_2023 = CO_data_2023[['Date','Daily Max 8-hour CO Concentration','Local Site Name']]
+
+# Extract Month from Date column
+Condensed_CO_data_2022['Month'] = Condensed_CO_data_2022['Date'].dt.to_period('M')
+Condensed_CO_data_2023['Month'] = Condensed_CO_data_2023['Date'].dt.to_period('M')
+
+# Calculate average CO concentration each month in 2022 and 2023
+average_CO_2022 = Condensed_CO_data_2022.groupby(['Month']).mean().reset_index()
+average_CO_2023 = Condensed_CO_data_2023.groupby(['Month']).mean().reset_index()
+
+print(f'The average CO levels in 2022: \n{average_CO_2022}')
+print(f'\nThe average CO levels in 2023: \n{average_CO_2023}')
+
+# Calculate average CO concentration by each local site in each year
+local_CO_2022 = Condensed_CO_data_2022.groupby(['Local Site Name']).mean().reset_index()
+local_CO_2023 = Condensed_CO_data_2023.groupby(['Local Site Name']).mean().reset_index()
+
+print(f'The average CO levels in each site in 2022: \n{local_CO_2022}')
+print(f'The average CO levels in each site in 2023: \n{local_CO_2023}')
+
+# Graph results
+# Convert 'Month' to string for both DataFrames
+average_CO_2022['Month'] = average_CO_2022['Month'].astype(str)
+average_CO_2023['Month'] = average_CO_2023['Month'].astype(str)
+
+# Create a combined plot for 2022 and 2023
+plt.plot(average_CO_2022['Month'], average_CO_2022['Daily Max 8-hour CO Concentration'], label='2022 CO Levels', marker='o')
+plt.plot(average_CO_2023['Month'], average_CO_2023['Daily Max 8-hour CO Concentration'], label='2023 CO Levels', marker='x')
+
+# Create labels for the plot
+plt.xlabel('Month')
+plt.ylabel('CO Concentration')
+plt.title('CO Levels in 2022 and 2023')
+
+# Add a legend to differentiate between 2022 and 2023
+plt.legend()
+
+# Rotate x-axis labels
+plt.xticks(rotation=45)
+
+# Show the combined plot
+plt.show()
+
+# Create a combined plot for 2022 and 2023
+plt.plot(local_CO_2022['Local Site Name'], local_CO_2022['Daily Max 8-hour CO Concentration'], label='2022 CO Levels', marker='o')
+plt.plot(local_CO_2023['Local Site Name'], local_CO_2023['Daily Max 8-hour CO Concentration'], label='2023 CO Levels', marker='x')
+
+# Create labels for the plot
+plt.xlabel('Local Site')
+plt.ylabel('CO Concentration')
+plt.title('CO Levels in 2022 and 2023')
+
+# Add a legend to differentiate between 2022 and 2023
+plt.legend()
+
+# Rotate x-axis labels
+plt.xticks(rotation=45)
+
+# Show the combined plot
+plt.show()
+
+###Citation
+##Data obtain from EPA 
+##https://www.epa.gov/outdoor-air-quality-data/download-daily-data
